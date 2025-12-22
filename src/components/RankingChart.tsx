@@ -6,7 +6,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Cell,
 } from 'recharts';
@@ -18,14 +17,12 @@ interface RankingChartProps {
     value: number;
   }>;
   title: string;
-  xAxisLabel?: string;
   yAxisLabel?: string;
 }
 
 const RankingChart: React.FC<RankingChartProps> = ({
   data,
   title,
-  xAxisLabel = 'Județ',
   yAxisLabel = 'Valoare',
 }) => {
   return (
@@ -59,7 +56,7 @@ const RankingChart: React.FC<RankingChartProps> = ({
             }}
           />
           <Bar dataKey="value" name={yAxisLabel} radius={[0, 4, 4, 0]}>
-            {data.map((entry, index) => (
+            {data.map((_entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={CULORI_GRAFICE[index % CULORI_GRAFICE.length]}

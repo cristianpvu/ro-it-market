@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { INSTempoResponse, JudetData } from '@/types';
+import { JudetData } from '@/types';
 
 // Detectează automat environment-ul (local vs production)
 const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
@@ -162,9 +162,7 @@ class INSTempoAPI {
   async getPopulationByCounty(year: number = 2024): Promise<Record<string, number>> {
     try {
       // Folosim matricea POP105A pentru populație rezidentă
-      const matrixUrl = this.useProxy 
-        ? CORS_PROXY + encodeURIComponent(`${this.baseURL}/matrix/POP105A/data`)
-        : `${this.baseURL}/matrix/POP105A/data`;
+      const matrixUrl = `${this.proxyURL}/matrix/POP105A`;
 
       const response = await axios.post(matrixUrl, {
         startPeriod: year,
@@ -190,10 +188,10 @@ class INSTempoAPI {
    */
   async checkAPIHealth(): Promise<boolean> {
     try {
-      const response = await axios.get(this.baseURL + '/health', {
+      const response = await axios.get(this.proxyURL + '/health', {
         timeout: 5000,
       }).catch(() => 
-        axios.get(this.baseURL, { timeout: 5000 })
+        axios.get(this.proxyURL, { timeout: 5000 })
       );
       
       return response.status === 200;
@@ -241,9 +239,11 @@ class INSTempoAPI {
 
         if (!judetMap.has(countyName)) {
           judetMap.set(countyName, {
-            nume: countyName,
+            judet: countyName,
             populatie: populationData[countyName] || 0,
-            angajati: {},
+            angajatiIT: {},
+            densitateIT: 0,
+            rataCrestere: 0,
           });
         }
 
@@ -252,7 +252,7 @@ class INSTempoAPI {
         const value = parseFloat(item.valoare || item.value || item.val || '0');
 
         if (!isNaN(year) && !isNaN(value)) {
-          judetData.angajati[year] = value;
+          judetData.angajatiIT[year] = value;
         }
       }
 

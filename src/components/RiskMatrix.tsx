@@ -8,7 +8,6 @@ interface RiskMatrixProps {
 
 const RiskMatrix: React.FC<RiskMatrixProps> = ({ data }) => {
   // Calculează media pentru linii de referință
-  const avgSaturatie = data.reduce((sum, d) => sum + d.saturatieIndex, 0) / data.length;
   const avgCAGR = data.reduce((sum, d) => sum + d.cagr, 0) / data.length;
 
   // Funcție pentru a determina categoria și culoarea

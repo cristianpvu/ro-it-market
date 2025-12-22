@@ -115,7 +115,6 @@ export class XLSXDataLoader {
       
       // Calculează metrici
       const values = Object.values(angajatiIT);
-      const average = values.length > 0 ? values.reduce((sum, val) => sum + val, 0) / values.length : 0;
       const latest = values.length > 0 ? values[values.length - 1] : 0;
       const oldest = values.length > 0 ? values[0] : 0;
       const rataCrestere = oldest !== 0 ? ((latest - oldest) / oldest) * 100 : 0;
