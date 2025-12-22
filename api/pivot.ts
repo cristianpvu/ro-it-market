@@ -24,26 +24,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const insUrl = `${INS_BASE_URL}/pivot/`;
 
   console.log(`📡 [VERCEL PROXY] POST ${insUrl}`);
+  console.log('📋 [VERCEL PROXY] Body:', JSON.stringify(req.body));
 
   try {
     const response = await fetch(insUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        'Accept': 'application/json, text/plain, */*',
         'User-Agent': 'Mozilla/5.0'
       },
       body: JSON.stringify(req.body)
     });
 
+    console.log('📊 [VERCEL PROXY] Response status:', response.status);
+    console.log('📊 [VERCEL PROXY] Response headers:', Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ [VERCEL PROXY] INS API error:', errorText);
+      return res.status(response.status).json({
+        error: 'Eroare de la API-ul INS',
+        status: response.status,
+        details: errorText
+      });
+    }
+
     // INS TEMPO returnează text/CSV, nu JSON
     const data = await response.text();
 
-    console.log('✅ [VERCEL PROXY] Success');
+    console.log('✅ [VERCEL PROXY] Success, data length:', data.length);
     // Returnează ca string pentru a fi procesat de client
     return res.status(200).send(data);
   } catch (error: any) {
     console.error('❌ [VERCEL PROXY] Error:', error.message);
+    console.error('❌ [VERCEL PROXY] Stack:', error.stack);
     return res.status(500).json({
       error: 'Eroare la obținerea datelor de la INS',
       details: error.message
