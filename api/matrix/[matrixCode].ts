@@ -35,10 +35,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     const response = await fetch(insUrl, fetchOptions);
-    const data = await response.json();
-
-    console.log('✅ [VERCEL PROXY] Success');
-    return res.status(200).json(data);
+    
+    // Verifică content-type pentru a decide cum să parsăm
+    const contentType = response.headers.get('content-type');
+    let data;
+    
+    if (contentType?.includes('application/json')) {
+      data = await response.json();
+      return res.status(200).json(data);
+    } else {
+      // INS returnează text/CSV pentru unele endpoints
+      data = await response.text();
+      return res.status(200).send(data);
+    }
   } catch (error: any) {
     console.error('❌ [VERCEL PROXY] Error:', error.message);
     return res.status(500).json({

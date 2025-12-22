@@ -36,10 +36,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: JSON.stringify(req.body)
     });
 
-    const data = await response.json();
+    // INS TEMPO returnează text/CSV, nu JSON
+    const data = await response.text();
 
     console.log('✅ [VERCEL PROXY] Success');
-    return res.status(200).json(data);
+    // Returnează ca string pentru a fi procesat de client
+    return res.status(200).send(data);
   } catch (error: any) {
     console.error('❌ [VERCEL PROXY] Error:', error.message);
     return res.status(500).json({
