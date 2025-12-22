@@ -1,6 +1,11 @@
 import axios from 'axios';
 import type { JudetData } from '@/types';
 
+// Detectează automat environment-ul (local vs production)
+const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? 'http://localhost:3001/api'
+  : '/api'; // Pe Vercel, API-urile sunt la /api/*
+
 // Mapare între numele din API TEMPO (fără diacritice) și numele corecte (cu diacritice)
 const NUME_JUDETE_API_MAPPING: Record<string, string> = {
   'Alba': 'Alba',
@@ -66,7 +71,7 @@ export const TempoAPIService = {
       };
       
       const response = await axios.post(
-        'http://localhost:3001/api/pivot',
+        `${API_BASE_URL}/pivot`,
         REQUEST_BODY,
         {
           headers: {
@@ -120,7 +125,7 @@ export const TempoAPIService = {
       };
       
       const response = await axios.post(
-        'http://localhost:3001/api/pivot',
+        `${API_BASE_URL}/pivot`,
         payload,
         {
           headers: {

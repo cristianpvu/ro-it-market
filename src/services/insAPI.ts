@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { INSTempoResponse, JudetData } from '@/types';
 
-const LOCAL_PROXY = 'http://localhost:3001/api';
+// Detectează automat environment-ul (local vs production)
+const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? 'http://localhost:3001/api'
+  : '/api'; // Pe Vercel, API-urile sunt la /api/*
 
 const MATRIX_CODE = 'FOM103D';
 const JUDETE_MAP: Record<string, string> = {
@@ -27,7 +30,7 @@ const JUDETE_MAP: Record<string, string> = {
 class INSTempoAPI {
   private proxyURL: string;
 
-  constructor(proxyURL: string = LOCAL_PROXY) {
+  constructor(proxyURL: string = API_BASE_URL) {
     this.proxyURL = proxyURL;
   }
 
